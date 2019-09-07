@@ -8,11 +8,11 @@ from keras.preprocessing.image import array_to_img
 ts = time.time()
 
 # Hyperparameters
-scale_fac = 6
-ite = 1
-res_dist_ite = 1 #int(N_time/10)
+scale_fig = 8
+counter = 1
+res_dist_count = 1 #int(N_time/10)
 Time_to_print = 20
-How_many_fig= 10
+N_of_figures= 10
 Fig_size_scale = 10
 
 Agent_4_pixel = 20
@@ -21,11 +21,11 @@ N_time = 100
 
 # Define Picture and Desirex Pixels
 # ITU Logo# ITU Logo# ITU Logo# ITU Logo# ITU Logo# ITU Logo# ITU Logo# ITU Logo
-data_path = 'C:/Users/samet/Desktop/Guncelle/28.08.19/Behcet_Acikmese/Swarm/2012-A Markov chain approach to probabilistic swarm guidance/Code/'
-# data_path = '/media/su/Windows/Users/samet/Desktop/Guncelle/28.08.19/Behcet_Acikmese/Swarm/2012-A Markov chain approach to probabilistic swarm guidance/Code/'
+# data_path = 'C:/Users/samet/Desktop/Guncelle/28.08.19/Behcet_Acikmese/Swarm/2012-A Markov chain approach to probabilistic swarm guidance/Code/'
+data_path = '/media/su/Windows/Users/samet/Desktop/Guncelle/28.08.19/Behcet_Acikmese/Swarm/2012-A_Markov_chain_approach_to_probabilistic_swarm_guidance/Code/'
 img = cv2.imread(data_path+'ITU_Logo.png') 
 print(img.shape)
-img = cv2.resize(img,(int(img.shape[1]/scale_fac),int(img.shape[0]/scale_fac)))
+img = cv2.resize(img,(int(img.shape[1]/scale_fig),int(img.shape[0]/scale_fig)))
 print(img.shape)
 img_show = plt.imshow(array_to_img(img))
 adana = img[:,:,0]
@@ -140,56 +140,31 @@ for i in range(m):
 # ONLY ENVIRONMENT
 # ONLY ENVIRONMENT
 # ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT        
-# ONLY ENVIRONMENT
-# ONLY ENVIRONMENT
      
-# Define Matrices
         
-# Metropolis-Hasting Algorithm
-K = np.zeros([m,m]) # Proposal Matrix
-A_a_t = A_a.transpose()
-K =  np.divide(A_a_t, A_a_t.sum(axis=1)[None,:]) 
-
+## Metropolis-Hasting Algorithm 
+K =  np.divide(A_a.transpose(), A_a.transpose().sum(axis=1)[None,:]) # Proposal Matrix
 A_a  = []
-A_a_t = []
-print('Check: Sum of K Matrix: {}'.format(np.mean(np.matmul(np.ones([1,m]),K))))
+print('Check: Sum of Proposal Matrix (K) Matrix: {}'.format(np.mean(np.matmul(np.ones([1,m]),K))))
 
 R = np.zeros([m,m]) # Intermediary Matrix
 R_ind = np.where((K*v) != 0)
 
-# Kv = K*v
 R[R_ind[0],R_ind[1]] = (K*v).transpose()[R_ind[0],R_ind[1]]/((K*v)[R_ind[0],R_ind[1]])
 R_ind = []
-# Kv = []
 
-# F = np.zeros([m,m]) # Acceptance Matrix
 F = alpha * np.minimum(1,R) # Acceptance Matrix
 
 R = []      
-# M = np.zeros([m,m]) # Markov Matrix
 M_ii_sum = np.zeros(m)
 
-M = K*F
+M = K*F # Markov Matrix
 M_ii_sum = ((1-F) * K).sum(axis=0)
 F = []
 for j in range(m):
     M[j,j] = K[j,j] + M_ii_sum[j]
     
-print('Check: Sum of M Matrix: {}'.format(np.mean(np.matmul(np.ones([1,m]),M))))
+print('Check: Sum of Markov Matrix (M) Matrix: {}'.format(np.mean(np.matmul(np.ones([1,m]),M))))
 K = []
 
 # [2]+[3]
@@ -212,43 +187,11 @@ M_new = []
 # TO RESET
 # TO RESET
 # TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
-# TO RESET
 
-# Probablilistic Guidance Algorithm (PGA)
-# [1]
+## Probablilistic Guidance Algorithm (PGA)
+## [1]
 r = np.random.choice(np.arange(0, m), size = N, p=x_t[:,0]).astype(np.int32)
 
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
-# TO CONTINOUE
 # TO CONTINOUE
 # TO CONTINOUE
 # TO CONTINOUE
@@ -256,7 +199,7 @@ r = np.random.choice(np.arange(0, m), size = N, p=x_t[:,0]).astype(np.int32)
 T = np.zeros([N_time])
 
 
-res_dist = np.zeros([m_row,m_column,int(N_time/res_dist_ite)+1])
+res_dist = np.zeros([m_row,m_column,int(N_time/res_dist_count)+1])
 
 # Initial distribution
 
@@ -281,12 +224,12 @@ for t in range(N_time):
     count_agent[[int(i) for i in unique_list]] = counts
     T[t] = np.sum(np.abs(count_agent/N - v))
     
-    if t%res_dist_ite == 0:
+    if t%res_dist_count == 0:
         for k in range(N):
             i = int(r[k]/m_column)
             j = int(r[k]%m_column)
-            res_dist[i,j,ite] += 1
-        ite += 1
+            res_dist[i,j,counter] += 1
+        counter += 1
         
     print("Total Variation: {}".format(T[t])) if t%Time_to_print == 0 else 0    
     print("Time to Solve: {}".format((time.time() - ts_step)*Time_to_print)) if t%Time_to_print == 0 else 0
@@ -295,13 +238,13 @@ for t in range(N_time):
 #cmap = sns.dark_palette("red", as_cmap=True)
 #cmap = sns.diverging_palette(250, 2, as_cmap=True)
 
-save_ite = int(N_time/How_many_fig)
-for i in range(int(ite/save_ite)):
+save_count = int(N_time/N_of_figures)
+for i in range(int(counter/save_count)):
     plt.figure(num=i, figsize=(img.shape[1]/Fig_size_scale,img.shape[0]/Fig_size_scale))
 #    sns.heatmap(res_dist[:,:,i*2], cmap=cmap)
 #    sns.heatmap(res_dist[:,:,i*2], cmap='Blues', linewidths=.1)
 #    sns.heatmap(res_dist[:,:,i*2], vmin=0.2, vmax=0.7)
-    sns_plot = sns.heatmap(res_dist[:,:,i*save_ite], vmin=0, vmax=Agent_4_pixel*1)
+    sns_plot = sns.heatmap(res_dist[:,:,i*save_count], vmin=0, vmax=Agent_4_pixel*1)
     sns_plot = sns_plot.get_figure()
     print(i)
     fig_name = str(i) + '.png'
