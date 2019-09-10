@@ -3,12 +3,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 import cv2 
-from keras.preprocessing.image import array_to_img
 
 ts = time.time()
 
 # Hyperparameters
-scale_fig = 8
+scale_fig = 16
 counter = 1
 res_dist_count = 1 #int(N_time/10)
 Time_to_print = 20
@@ -27,13 +26,15 @@ img = cv2.imread(data_path+'ITU_Logo.png')
 print(img.shape)
 img = cv2.resize(img,(int(img.shape[1]/scale_fig),int(img.shape[0]/scale_fig)))
 print(img.shape)
-img_show = plt.imshow(array_to_img(img))
+cv2.imshow('', (img))
+cv2.waitKey(0)
 adana = img[:,:,0]
 
 pixels = np.where(img[:,:,0] < 200)
 img_cont = np.ones([img.shape[0],img.shape[1],3])*255
-img_cont[pixels[0],pixels[1],0] = 0
-img_show_cont = plt.imshow(array_to_img(img_cont))
+img_cont[pixels[0],pixels[1],1] = 0
+cv2.imshow('', img_cont)
+cv2.waitKey(0)
 
 pixels = pixels[0][:]*img.shape[1] + pixels[1][:]
 pixels = pixels.tolist()
